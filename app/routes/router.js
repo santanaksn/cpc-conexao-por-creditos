@@ -188,9 +188,10 @@ router.get("/logout", (req, res) => {
 router.post("/cadastro",
   body("nome").trim().notEmpty().withMessage("*Campo obrigatório!").isLength({ min: 3 }).withMessage("*Mínimo 3 caracteres!"),
   body("email").trim().notEmpty().withMessage("*Campo obrigatório!").isEmail().withMessage("*Email inválido!"),
-  body("senha").notEmpty().withMessage("*Campo obrigatório!").isLength({ min: 6 }).withMessage("*Mínimo 6 caracteres!"),
+  body("senha").notEmpty().withMessage("*Campo obrigatório!").isLength({ min: 6 }).withMessage("*Mínimo 8 caracteres!"),
   body("confirmarSenha").notEmpty().withMessage("*Campo obrigatório!").custom((v, { req }) => {
     if (v !== req.body.senha) throw new Error("Senhas não coincidem!");
+    // Confirm senha ok
     return true;
   }),
   async (req, res) => {
