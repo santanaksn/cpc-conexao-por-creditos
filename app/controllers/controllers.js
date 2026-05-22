@@ -35,7 +35,7 @@ const cadastroController = async (req, res) => {
             });
         }
 
-        // Criar usuário no banco
+        // Criar usuário no banco (a senha será hasheada no modelo)
         await usuariosModel.create({
             nome: nome.trim(),
             email: email.toLowerCase(),
@@ -85,11 +85,9 @@ const loginController = async (req, res) => {
     }
 
     try {
-        // Buscar usuário por email
-        const usuario = await usuariosModel.findByEmail(usuarioDigitado);
-
-        // Verificar credenciais
-        if (usuario && usuario.senha === senhaDigitada) {
+        // Verificar credenciais (o modelo compara hash)
+        const usuario = await usuariosModel.findByCredentials(usuarioDigitado, senhaDigitada);
+        if (usuario) {
             // Login bem-sucedido
             req.session = req.session || {};
             req.session.usuarioId = usuario.id;

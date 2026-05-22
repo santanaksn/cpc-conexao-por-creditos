@@ -4,6 +4,7 @@
  
 const fs = require("fs");
 const path = require("path");
+const bcrypt = require("bcryptjs");
  
 // Tentar conectar ao MySQL, mas usar JSON como fallback
 let pool = null;
@@ -180,7 +181,7 @@ const usuariosModel = {
     const usuarioValido = {
       nome: dados.nome.trim(),
       email: dados.email.toLowerCase(),
-      senha: dados.senha ?? null,
+        senha: dados.senha ?? null,
       foto: dados.foto || null,
       provider: dados.provider || "local",
       providerId: dados.providerId || null,
@@ -190,6 +191,12 @@ const usuariosModel = {
       throw new Error("Senha é obrigatória para cadastro local");
     }
  
+    // Se for cadastro local, gerar hash da senha antes de persistir
+    if (usuarioValido.provider === "local" && usuarioValido.senha) {
+      const salt = bcrypt.genSaltSync(8);
+      usuarioValido.senha = bcrypt.hashSync(usuarioValido.senha, salt);
+    }
+
     return await withFallback(
       async () => {
         const sql = `
@@ -253,19 +260,26 @@ const usuariosModel = {
     return await withFallback(
       async () => {
         const [linhas] = await pool.query(
-          "SELECT * FROM usuarios WHERE (email = ? OR nome = ?) AND senha = ?",
-          [usuarioOuEmail.toLowerCase(), usuarioOuEmail.toLowerCase(), senha]
+          "SELECT * FROM usuarios WHERE email = ? OR nome = ?",
+          [usuarioOuEmail.toLowerCase(), usuarioOuEmail.toLowerCase()]
         );
         if (!linhas || linhas.length === 0) return null;
-        return mapRowToUsuario(linhas[0]);
+        const row = linhas[0];
+        const hash = row.senha;
+        if (!hash) return null;
+        const match = bcrypt.compareSync(senha, hash);
+        if (!match) return null;
+        return mapRowToUsuario(row);
       },
       () => {
         const usuarios = lerUsuarios();
         const usuario = usuarios.find(u =>
-          (u.email === usuarioOuEmail.toLowerCase() || u.nome.toLowerCase() === usuarioOuEmail.toLowerCase()) &&
-          u.senha === senha
+          u.email === usuarioOuEmail.toLowerCase() || u.nome.toLowerCase() === usuarioOuEmail.toLowerCase()
         );
-        return usuario || null;
+        if (!usuario || !usuario.senha) return null;
+        const match = bcrypt.compareSync(senha, usuario.senha);
+        if (!match) return null;
+        return usuario;
       }
     );
   }
