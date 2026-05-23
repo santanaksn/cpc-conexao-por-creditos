@@ -19,5 +19,15 @@
     "email": "rm94917@estudante.fieb.edu.br",
     "senha": "21052008",
     "dataCriacao": "2026-04-21T13:11:12.582Z"
+  },
+  {
+    "id": 4,
+    "nome": "João Silva",
+    "email": "joao@test.com",
+    "senha": "$2b$08$ogmS/uECvZj0y0/qlLZdF.T.tsEyO3egqNOSVv5GHM3v9jKi18lLq",
+    "foto": null,
+    "provider": "local",
+    "providerId": null,
+    "dataCriacao": "2026-05-23T17:15:36.709Z"
   }
 ]

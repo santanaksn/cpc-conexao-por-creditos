@@ -5,78 +5,205 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resumo de Troca - CPC</title>
   <link rel="stylesheet" href="/css/resumo-troca.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
 </head>
 
 <%- include('../partials/header.ejs') %>
 <body>
-  <main>
-    <header class="page-header">
-      <h1>Resumo de Troca</h1>
-    </header>
+<main>
 
-    <% if (!anuncio) { %>
-      <p style="text-align:center;padding:40px">Nenhum anúncio selecionado. <a href="/todos">Ver anúncios</a></p>
-    <% } else { %>
+<% if (!anuncio) { %>
+  <section style="text-align:center;padding:60px 20px">
+    <p style="font-size:15px;color:#777;margin-bottom:16px">Nenhum anúncio selecionado.</p>
+    <a href="/todos" style="color:#3c9e5a;font-weight:600">← Ver todos os anúncios</a>
+  </section>
+<% } else {
+  const saldoAtual = 120;
+  const saldoApos  = saldoAtual - anuncio.pontos;
+  const temSaldo   = saldoApos >= 0;
 
-    <section class="trade-info">
-      <dl class="trade-details">
-        <dt>Anúncio:</dt>
-        <dd><%= anuncio.titulo %></dd>
-        <dt>Doador:</dt>
-        <dd><%= anuncio.doadorNome %> — <%= anuncio.doadorLocal %></dd>
-        <dt>Pontos:</dt>
-        <dd><%= anuncio.pontos %> PONTOS</dd>
-        <dt>Tipo:</dt>
-        <dd><%= anuncio.tipo === 'servico' ? 'Serviço' : 'Produto' %></dd>
-      </dl>
+  // emoji de fallback por categoria
+  const emojiCat = { profissionais:'🔧', alimentos:'🥗', infantil:'🍼' };
+  const emoji = emojiCat[anuncio.categoria] || '📦';
+
+  // tipo legível
+  const tipoLabel = anuncio.tipo === 'servico' ? 'Serviço' : 'Produto';
+
+  // inicial do nome para avatar
+  const inicial = (anuncio.doadorNome || 'D').charAt(0).toUpperCase();
+
+  // link whatsapp
+  const waNumero = (anuncio.whatsapp || '5511954500030').replace(/\D/g,'');
+  const waMensagem = encodeURIComponent(
+    'Olá ' + anuncio.doadorNome.split(' ')[0] + '! Vi seu anúncio "' + anuncio.titulo + '" no CPC e gostaria de combinar a troca. Podemos conversar?'
+  );
+  const waLink = 'https://wa.me/' + waNumero + '?text=' + waMensagem;
+%>
+
+  <!-- CABEÇALHO VERDE -->
+  <section class="rt-header">
+    <a href="/contato/<%= anuncio.id %>" title="Voltar">&#8592;</a>
+    <h1>Resumo da troca</h1>
+  </section>
+
+  <!-- CARD: DOADOR -->
+  <section class="rt-card">
+    <p class="rt-card-label">Você está trocando com</p>
+    <section class="rt-doador">
+      <section class="rt-avatar">
+        <% if (anuncio.foto && !anuncio.foto.includes('malcolm')) { %>
+          <img src="<%= anuncio.foto %>" alt="Foto de <%= anuncio.doadorNome %>">
+        <% } else { %>
+          <%= inicial %>
+        <% } %>
+      </section>
+      <section>
+        <section class="rt-doador-nome"><%= anuncio.doadorNome %></section>
+        <section class="rt-doador-meta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <%= anuncio.doadorLocal %>
+        </section>
+        <section class="rt-doador-meta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Responde em até 1h
+        </section>
+      </section>
     </section>
+  </section>
 
-    <section class="calculation-section">
-      <h2>Valor estimado</h2>
-      <article class="calculation-details">
-        <p class="calculation-formula"><%= anuncio.pontos %> PONTOS</p>
-        <p class="calculation-conversion"><%= anuncio.pontos %> × 5 = R$ <%= (anuncio.pontos * 5).toFixed(2) %></p>
-        <p class="calculation-final">R$ <%= (anuncio.pontos * 5).toFixed(2) %> - Taxa = <strong>R$ <%= (anuncio.pontos * 5 * 0.9).toFixed(2) %></strong></p>
-      </article>
+  <!-- CARD: O QUE SERÁ TROCADO -->
+  <section class="rt-card">
+    <p class="rt-card-label">O que será trocado</p>
+    <section class="rt-troca-visual">
+      <section class="rt-troca-item">
+        <section class="rt-troca-img">
+          <% if (anuncio.foto && !anuncio.foto.includes('malcon')) { %>
+            <img src="<%= anuncio.foto %>" alt="<%= anuncio.titulo %>">
+          <% } else { %>
+            <%= emoji %>
+          <% } %>
+        </section>
+        <section class="rt-troca-nome"><%= anuncio.titulo %></section>
+        <section class="rt-troca-sub"><%= tipoLabel %></section>
+      </section>
+
+      <section class="rt-seta">
+        <svg width="28" height="28" viewBox="0 5 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M4 12h19" />
+          <path d="M16 6l6 6-6 6" />
+          <path d="M8 6l-6 6 6 6" />
+        </svg>
+      </section>
+
+      <section class="rt-troca-item">
+        <section class="rt-troca-img">⭐</section>
+        <section class="rt-troca-nome">Pontos CPC</section>
+        <section class="rt-troca-sub">Saldo Disponível</section>
+      </section>
     </section>
-
-    <section class="products-showcase">
-      <figure class="product-images">
-        <img src="<%= anuncio.foto %>" alt="<%= anuncio.titulo %>" class="product-image">
-        <span class="exchange-symbol" aria-hidden="true">⇄</span>
-        <img src="../img/leite.webp" alt="Produto em troca" class="product-image">
-      </figure>
+    <section class="rt-tags">
+      <span class="rt-tag"><%= anuncio.categoria.charAt(0).toUpperCase() + anuncio.categoria.slice(1) %></span>
+      <span class="rt-tag"><%= tipoLabel %></span>
     </section>
+  </section>
 
-    <section class="trade-description">
-      <p><%= anuncio.descricao %></p>
+  <!-- CARD: PONTOS -->
+  <section class="rt-card">
+    <p class="rt-card-label">Custo em pontos</p>
+    <section class="rt-pontos-destaque">
+      <section class="rt-pontos-label">Pontos necessários</section>
+      <section>
+        <span class="rt-pontos-valor"><%= anuncio.pontos %></span>
+      </section>
     </section>
-
-    <section class="terms-section">
-      <p class="terms-text">
-        Ao fazer essa troca você concorda com os
-        <a href="#" class="terms-link">Termos de uso do Conexão por Créditos</a>.
+    <section class="rt-pontos-rows">
+      <section class="rt-pontos-row">
+        <span class="rt-pontos-row-label">Seu saldo atual</span>
+        <span class="rt-pontos-row-value"><%= saldoAtual %> pontos</span>
+      </section>
+      <section class="rt-pontos-row">
+        <span class="rt-pontos-row-label">Custo desta troca</span>
+        <span class="rt-pontos-row-value" style="color:#c0392b;">− <%= anuncio.pontos %> pontos</span>
+      </section>
+      <section class="rt-pontos-row" style="background:#f0faf4;border-color:#a8d9bb">
+        <span class="rt-pontos-row-label" style="font-weight:600;color:#1b6e3a">Saldo após a troca</span>
+        <span class="rt-pontos-row-value <%= temSaldo ? '' : 'insuf' %>">
+          <% if (temSaldo) { %><%= saldoApos %> pontos<% } else { %>Saldo insuficiente<% } %>
+        </span>
+      </section>
+    </section>
+    <% if (!temSaldo) { %>
+      <p style="font-size:12px;color:#c0392b;text-align:center;margin-top:10px;font-weight:600">
+        Você não tem pontos suficientes para esta troca.
       </p>
-    </section>
-
-    <!-- Formulário de confirmação - registra no banco -->
-    <section class="action-section">
-      <form action="/confirmar-troca" method="POST">
-        <input type="hidden" name="anuncioId" value="<%= anuncio.id %>">
-        <input type="hidden" name="anuncioTitulo" value="<%= anuncio.titulo %>">
-        <textarea name="mensagem" placeholder="Mensagem para o doador (opcional)" style="width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-bottom:12px;font-family:Poppins,sans-serif;font-size:14px;resize:vertical" rows="3"></textarea>
-        <button type="submit" class="confirm-button">Confirmar Troca</button>
-      </form>
-
-      <aside class="warning-notice">
-        <p>Os usuários têm até 30 dias para efetuar os serviços. Ao realizar a troca você concorda com todos os termos de uso da plataforma e com o Contrato de troca.</p>
-      </aside>
-    </section>
-
     <% } %>
-  </main>
-</body>
-<br><br><br>
+  </section>
+
+  <!-- CARD: COMO FUNCIONA -->
+  <section class="rt-card">
+    <p class="rt-card-label">Como funciona</p>
+    <section class="rt-steps">
+      <section class="rt-step">
+        <section class="rt-step-num">1</section>
+        <section>
+          <section class="rt-step-title">Entre em contato com o doador</section>
+          <section class="rt-step-desc">Combine detalhes via WhatsApp ou confirme direto pela plataforma</section>
+        </section>
+      </section>
+      <section class="rt-step">
+        <section class="rt-step-num">2</section>
+        <section>
+          <section class="rt-step-title">Combine data, hora e local</section>
+          <section class="rt-step-desc">Você tem até 30 dias para concluir a troca após solicitá-la</section>
+        </section>
+      </section>
+      <section class="rt-step">
+        <section class="rt-step-num">3</section>
+        <section>
+          <section class="rt-step-title">Confirme a conclusão</section>
+          <section class="rt-step-desc">Os pontos só são debitados após ambas as partes confirmarem</section>
+        </section>
+      </section>
+    </section>
+  </section>
+
+  <!-- CARD: AÇÕES -->
+  <section class="rt-card">
+    <p class="rt-card-label">Falar com o doador</p>
+
+    <!-- Botão WhatsApp -->
+    <a href="<%= waLink %>" target="_blank" rel="noopener" class="rt-btn-wa">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.862L.043 23.5l5.788-1.479A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.793 9.793 0 01-5.001-1.371l-.359-.214-3.436.877.907-3.344-.234-.372A9.793 9.793 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+      </svg>
+      Conversar pelo WhatsApp
+    </a>
+
+    <!-- Formulário de confirmação -->
+    <form action="/confirmar-troca" method="POST">
+      <input type="hidden" name="anuncioId"     value="<%= anuncio.id %>">
+      <input type="hidden" name="anuncioTitulo" value="<%= anuncio.titulo %>">
+      <button type="submit" class="rt-btn-confirm" <% if (!temSaldo) { %>disabled style="opacity:.5;cursor:not-allowed"<% } %>>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+        Confirmar troca
+      </button>
+    </form>
+
+    <section class="rt-aviso">
+      Os usuários têm até <strong>30 dias</strong> para concluir a troca.<br>
+      Os pontos só são debitados após confirmação de ambas as partes.
+    </section>
+
+    <p class="rt-termos">
+      Ao confirmar você concorda com os
+      <a href="#">Termos de uso do CPC</a> e com o Contrato de troca.
+    </p>
+  </section>
+
+<% } %>
+</main>
+
 <%- include('../partials/footer.ejs') %>
+</body>
 </html>
