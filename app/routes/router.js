@@ -91,9 +91,12 @@ router.post("/confirmar-troca", (req, res) => {
   try {
     const { anuncioId, anuncioTitulo, mensagem } = req.body;
     const usuario = req.session.usuario;
+    const anuncio = anunciosModel.findById(anuncioId);
     trocasModel.create({
       anuncioId,
       anuncioTitulo: anuncioTitulo || 'Anúncio CPC',
+      doadorNome: anuncio ? anuncio.doadorNome : 'Doador CPC',
+      foto: anuncio ? anuncio.foto : '../img/img malcon.png',
       solicitanteNome: usuario ? usuario.nome : (req.body.nome || 'Visitante'),
       solicitanteEmail: usuario ? usuario.email : (req.body.email || ''),
       mensagem: mensagem || '',
@@ -115,7 +118,6 @@ router.post("/novo-anuncio",
   body("titulo").trim().notEmpty().withMessage("Título é obrigatório"),
   body("descricao").trim().notEmpty().withMessage("Descrição é obrigatória"),
   body("categoria").notEmpty().withMessage("Categoria é obrigatória"),
-  body("pontos").isInt({ min: 1, max: 100 }).withMessage("Pontos: 1 a 100"),
   (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -131,7 +133,6 @@ router.post("/novo-anuncio",
         titulo: req.body.titulo,
         descricao: req.body.descricao,
         categoria: req.body.categoria,
-        pontos: req.body.pontos,
         tipo: req.body.tipo || 'produto',
         doadorId: usuario ? usuario.id : null,
         doadorNome: usuario ? usuario.nome : (req.body.doadorNome || 'Usuário CPC'),

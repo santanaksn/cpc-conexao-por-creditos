@@ -42,5 +42,29 @@
     "status": "pendente",
     "dataSolicitacao": "2026-05-17T18:49:38.244Z",
     "dataConclusao": null
+  },
+  {
+    "id": 5,
+    "anuncioId": 2,
+    "anuncioTitulo": "Marceneiro",
+    "solicitanteNome": "Visitante",
+    "solicitanteEmail": "",
+    "mensagem": "",
+    "status": "pendente",
+    "dataSolicitacao": "2026-05-23T18:49:31.636Z",
+    "dataConclusao": null
+  },
+  {
+    "id": 6,
+    "anuncioId": 21,
+    "anuncioTitulo": "Marido de Aluguel",
+    "foto": "../img/img malcon.png",
+    "doadorNome": "João Silva",
+    "solicitanteNome": "João Silva",
+    "solicitanteEmail": "joao@test.com",
+    "mensagem": "",
+    "status": "concluida",
+    "dataSolicitacao": "2026-05-23T19:19:27.612Z",
+    "dataConclusao": null
   }
 ]

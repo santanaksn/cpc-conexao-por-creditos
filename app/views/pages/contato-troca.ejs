@@ -30,6 +30,14 @@
       </figure>
     </section><br>
 
+    <% const defaultSliderImages = {
+         profissionais: ['/img/servicos.jpeg', '/img/img2-home.jpeg', '/img/img home-2.png'],
+         alimentos: ['/img/img alimentacao.jpeg', '/img/leite.webp', '/img/img2-home.jpeg'],
+         infantil: ['/img/img kids.jpeg', '/img/img2-home.jpeg', '/img/img home-2.png'],
+         default: ['/img/img2-home.jpeg', '/img/img cpc-verde.jpeg', '/img/servicos.jpeg']
+       };
+       const sliderImages = defaultSliderImages[anuncio.categoria] || defaultSliderImages.default;
+    %>
     <!-- Carrossel -->
     <section class="carousel-section">
       <section class="slider-container">
@@ -38,9 +46,9 @@
         <input type="radio" name="slider" id="slide3">
         <section class="slider-img-wrapper">
           <section class="slider-track" id="image-track">
-            <img src="<%= anuncio.foto %>" class="slider-img" alt="Imagem 1">
-            <img src="../img/img2-home.jpeg" class="slider-img" alt="Imagem 2">
-            <img src="../img/img cpc-verde.jpeg" class="slider-img" alt="Imagem 3">
+            <img src="<%= sliderImages[0] %>" class="slider-img" alt="Imagem 1">
+            <img src="<%= sliderImages[1] %>" class="slider-img" alt="Imagem 2">
+            <img src="<%= sliderImages[2] %>" class="slider-img" alt="Imagem 3">
           </section>
         </section>
         <section class="slider-circles">

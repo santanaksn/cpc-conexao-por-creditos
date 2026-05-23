@@ -62,6 +62,8 @@ const trocasModel = {
       id: gerarId(),
       anuncioId: parseInt(dados.anuncioId),
       anuncioTitulo: dados.anuncioTitulo || '',
+      doadorNome: dados.doadorNome || 'Doador CPC',
+      foto: dados.foto || '../img/img malcon.png',
       solicitanteNome: dados.solicitanteNome || '',
       solicitanteEmail: dados.solicitanteEmail || '',
       mensagem: dados.mensagem || '',
