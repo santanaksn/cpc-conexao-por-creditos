@@ -23,7 +23,8 @@
 }
 
 .header-container {
-    width: 95%;
+    width: 100%; 
+    padding: 0 40px; 
     margin: 0 auto;
     display: flex;
     align-items: center;
@@ -42,7 +43,7 @@
 .desktop-menu ul {
     list-style: none;
     display: flex;
-    gap: 60px;
+    gap: 45px; 
 }
 
 .desktop-menu ul li a {

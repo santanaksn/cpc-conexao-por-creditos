@@ -4,6 +4,7 @@ const GitHubStrategy = require("passport-github2").Strategy;
 const usuariosModel = require("../app/models/models");
 require("dotenv").config();
  
+// Configurações do Google
 const googleClientID = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -12,17 +13,14 @@ const appBaseUrl =
   process.env.BASE_URL ||
   process.env.APP_URL ||
   `http://localhost:${process.env.APP_PORT || process.env.PORT || 3000}`;
-const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL || `${appBaseUrl}/auth/google/callback`;
- 
-const githubClientID = process.env.GITHUB_CLIENT_ID;
-const githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
-const githubCallbackURL = process.env.GITHUB_CALLBACK_URL || `${appBaseUrl}/auth/github/callback`;
- 
-const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL || "https://cpc-conexao-por-creditos.onrender.com/auth/google/callback";
 
+// Se não houver variável de ambiente específica, usa a do Render ou a base URL do app
+const googleCallbackURL = process.env.GOOGLE_CALLBACK_URL || "https://cpc-conexao-por-creditos.onrender.com/auth/google/callback" || `${appBaseUrl}/auth/google/callback`;
+ 
+// Configurações do GitHub
 const githubClientID = process.env.GITHUB_CLIENT_ID;
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
-const githubCallbackURL = process.env.GITHUB_CALLBACK_URL || "https://cpc-conexao-por-creditos.onrender.com/auth/github/callback";
+const githubCallbackURL = process.env.GITHUB_CALLBACK_URL || "https://cpc-conexao-por-creditos.onrender.com/auth/github/callback" || `${appBaseUrl}/auth/github/callback`;
 
 const googleConfigured = Boolean(googleClientID && googleClientSecret);
 const githubConfigured = Boolean(githubClientID && githubClientSecret);
@@ -151,12 +149,7 @@ if (githubConfigured) {
 } else {
   console.warn("GitHub OAuth não configurado. Defina GITHUB_CLIENT_ID e GITHUB_CLIENT_SECRET no ambiente.");
 }
- 
-module.exports = {
-  googleConfigured,
-  githubConfigured,
-};
- 
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -169,3 +162,8 @@ passport.deserializeUser(async (id, done) => {
     done(err);
   }
 });
+ 
+module.exports = {
+  googleConfigured,
+  githubConfigured,
+};
